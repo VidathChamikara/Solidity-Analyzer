@@ -11,7 +11,7 @@ const JWT_SECRET =
   "hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe";
 
 // MongoDB connection URI
-const MONGODB_URI = "mongodb://127.0.0.1:27017/cyber";
+const MONGODB_URI = "mongodb+srv://cyber1:cyber1@cluster0.7jvyoar.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Connect to MongoDB using Mongoose
 mongoose
