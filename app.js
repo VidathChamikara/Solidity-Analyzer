@@ -11,7 +11,8 @@ const JWT_SECRET =
   "hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe";
 
 // MongoDB connection URI
-const MONGODB_URI = "mongodb+srv://cyber1:cyber1@cluster0.7jvyoar.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const MONGODB_URI =
+  "mongodb+srv://vidathamarasekara:Vidath123@cluster0.7jvyoar.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Connect to MongoDB using Mongoose
 mongoose
@@ -46,7 +47,7 @@ app.post("/register", async (req, res) => {
       fname,
       lname,
       email,
-      password: encryptedPassword,            
+      password: encryptedPassword,
     });
     res.send({ status: "ok" });
   } catch (error) {
@@ -55,50 +56,50 @@ app.post("/register", async (req, res) => {
 });
 
 app.post("/login-user", async (req, res) => {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email }).collation({});
-    if (!user) {
-      return res.json({ error: "User Not Found" });
+  const { email, password } = req.body;
+  const user = await User.findOne({ email }).collation({});
+  if (!user) {
+    return res.json({ error: "User Not Found" });
+  }
+  if (await bcrypt.compare(password, user.password)) {
+    const token = jwt.sign({ email: user.email }, JWT_SECRET, {
+      expiresIn: "365d",
+    });
+    if (res.status(201)) {
+      return res.json({ status: "ok", data: token });
+    } else {
+      return res.json({ error: "error" });
     }
-    if (await bcrypt.compare(password, user.password)) {
-      const token = jwt.sign({ email: user.email }, JWT_SECRET, {
-        expiresIn: "365d",
-      });
-      if (res.status(201)) {
-        return res.json({ status: "ok", data: token });
-      } else {
-        return res.json({ error: "error" });
-      }
-    }
-    res.json({ status: "error", error: "Invalid Password" });
-  });
+  }
+  res.json({ status: "error", error: "Invalid Password" });
+});
 
-  app.post("/userData", async (req, res) => {
-    const { token } = req.body;
-    try {
-      const user = jwt.verify(token, JWT_SECRET, (err, res) => {
-        if (err) {
-          return "token expired";
-        }
-        return res;
-      });
-      console.log(user);
-      if (user == "token expired") {
-        return res.send({ status: "error", data: "token expired" });
+app.post("/userData", async (req, res) => {
+  const { token } = req.body;
+  try {
+    const user = jwt.verify(token, JWT_SECRET, (err, res) => {
+      if (err) {
+        return "token expired";
       }
-      const usermail = user.email;
-      User.findOne({ email: usermail })
-        .collation({})
-        .then((data) => {
-          res.send({ status: "ok", data: data });
-        })
-        .catch((error) => {
-          res.send({ status: "error", data: error });
-        });
-    } catch (error) {}
-  });
-  
-  app.post("/updateCounts", async (req, res) => {
+      return res;
+    });
+    console.log(user);
+    if (user == "token expired") {
+      return res.send({ status: "error", data: "token expired" });
+    }
+    const usermail = user.email;
+    User.findOne({ email: usermail })
+      .collation({})
+      .then((data) => {
+        res.send({ status: "ok", data: data });
+      })
+      .catch((error) => {
+        res.send({ status: "error", data: error });
+      });
+  } catch (error) {}
+});
+
+app.post("/updateCounts", async (req, res) => {
   const { token } = req.body;
 
   try {
@@ -116,7 +117,7 @@ app.post("/login-user", async (req, res) => {
     const usermail = user.email;
 
     User.findOne({ email: usermail })
-    .collation({})
+      .collation({})
       .then((data) => {
         if (data.numberOfTimesLeft > 0) {
           // Update the "Number of times used" and "Number of times left" values
@@ -124,7 +125,8 @@ app.post("/login-user", async (req, res) => {
           data.numberOfTimesLeft -= 1;
 
           // Save the updated user data
-          data.save()
+          data
+            .save()
             .then(() => {
               res.send({ status: "ok", data: "Counts updated successfully" });
             })
@@ -152,7 +154,7 @@ app.post("/updateBankDetails", async (req, res) => {
 
     // Find the user based on the email
     User.findOne({ email: usermail })
-    .collation({})
+      .collation({})
       .then((user) => {
         if (!user) {
           res.send({ status: "error", data: "User not found" });
@@ -166,7 +168,8 @@ app.post("/updateBankDetails", async (req, res) => {
         user.numberOfTimesLeft += 1000;
 
         // Save the updated user
-        user.save()
+        user
+          .save()
           .then((updatedUser) => {
             res.send({ status: "ok", data: updatedUser });
           })
@@ -182,7 +185,6 @@ app.post("/updateBankDetails", async (req, res) => {
   }
 });
 
-
 app.listen(5000, () => {
-    console.log("Node server started");
-  });
+  console.log("Node server started");
+});
